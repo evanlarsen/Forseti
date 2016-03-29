@@ -1,0 +1,14 @@
+<template bindable="router">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="navbar-header">
+
+
+      <a class="navbar-brand" href="#">
+        <i class="fa fa-home"></i>
+        <span>${router.title}</span>
+      </a>
+
+      <i if.bind="router.isNavigating" class="navigating-spinner fa fa-spinner fa-spin fa-2x pull-right"></i>
+    </div>
+  </nav>
+</template>

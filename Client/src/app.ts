@@ -8,8 +8,8 @@ export class App {
     config.map([
       { route: ['', 'home'], name: 'home', moduleId: 'home', nav: true, title: 'home' },
       { route: 'devices', name: 'devices', moduleId: 'devices', nav: true, title: 'List of devices' },
-      { route: 'checkin',  name: 'checkin', moduleId: 'devices', nav: true, title: 'Checkin' },
-      { route: 'checkin',  name: 'checkout', moduleId: 'devices', nav: true, title: 'Checkout' }
+      { route: 'checkin',  name: 'checkin', moduleId: 'checkin', nav: true, title: 'Checkin' },
+      { route: 'checkin',  name: 'checkout', moduleId: 'checkout', nav: true, title: 'Checkout' }
     ]);
 
     this.router = router;
