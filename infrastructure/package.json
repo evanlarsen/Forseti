@@ -3,29 +3,25 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "test": "test"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/evanlarsen/Forseti.git"
   },
   "keywords": [
-    "mobile",
-    "device",
-    "asset",
-    "tracking",
-    "website",
     "azure",
     "nodejs",
     "arm",
     "templates",
-    "aurelia"
+    "forseti"
   ],
   "author": "evan larsen",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/evanlarsen/Forseti/issues"
   },
-  "homepage": "https://github.com/evanlarsen/Forseti#readme"
+  "homepage": "https://github.com/evanlarsen/Forseti#readme",
+
+  "scripts": {
+    "test": "test"
+  },
 }
