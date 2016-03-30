@@ -1,29 +1,11 @@
 <template>
   <require from="bootstrap/css/bootstrap.css"></require>
   <require from="app.css"></require>
+  <require from="master-navigation.html"></require>
 
   <div class="page-host">
     <router-view></router-view>
   </div>
 
-  <ul id="master-navigation">
-    <li>
-      <a href="javascript:void(0);">
-        <i class="fa fa-mobile-phone"></i>
-        devices
-      </a>
-    </li>
-    <li>
-      <a href="javascript:void(0);" class="active">
-        <i class="fa fa-check-square"></i>
-        check in
-      </a>
-    </li>
-    <li>
-      <a href="javascript:void(0);">
-        <i class="fa fa-square-o"></i>
-        check out
-      </a>
-    </li>
-  </ul>
+  <master-navigation router.bind="router"></nav-bar>
 </template>
