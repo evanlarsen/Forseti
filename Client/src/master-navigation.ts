@@ -5,21 +5,28 @@ import {autoinject} from 'aurelia-dependency-injection';
 @autoinject
 export class MasterNavigation{
     @bindable router;
-    isCheckIn = false;
-    isDevices = false;
-    isCheckOut = false;
+    isCheckIn: boolean;
+    isDevices: boolean;
+    isCheckOut: boolean;
 
     constructor(private eventAggregator: EventAggregator){
       this.eventAggregator.subscribe(
         'router:navigation:success',
         this.navigationSuccess.bind(this)
       );
+      this.resetNavFlags();
     }
 
-    navigationSuccess(event){
+    attached(){ console.log('master navigation attached');}
+
+    resetNavFlags(){
       this.isCheckIn = false;
       this.isDevices = false;
       this.isCheckOut = false;
+    }
+
+    navigationSuccess(event){
+      this.resetNavFlags();
       let moduleName = event.instruction.config.name;
       if (moduleName == 'devices'){
         this.isDevices = true;

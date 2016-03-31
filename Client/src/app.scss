@@ -1,0 +1,52 @@
+@import 'variables';
+
+section.au-enter-active{
+  animation: fade-in-right $animation-duration;
+}
+
+section.au-leave-active{
+  animation: fade-out-left $animation-duration;
+}
+
+@keyframes fade-in-right {
+  0% {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0)
+  }
+  100% {
+    opacity: 1;
+    transform: none
+  }
+}
+
+@keyframes fade-out-left {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+.root{
+}
+
+router-view{
+  position: absolute;
+  top: 0;
+  bottom: $master-navigation-height;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
+}
+
+master-navigation{
+  position: absolute;
+  height: $master-navigation-height;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
+}

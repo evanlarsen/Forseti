@@ -1,7 +1,3 @@
-
 export class Devices{
-
-  activate(){
-    
-  }
+  heading = "Devices";
 }

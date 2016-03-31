@@ -3,9 +3,8 @@
   <require from="app.css"></require>
   <require from="master-navigation"></require>
 
-  <div class="page-host">
+  <div class="root">
     <router-view></router-view>
+    <master-navigation router.bind="router"></nav-bar>
   </div>
-
-  <master-navigation router.bind="router"></nav-bar>
 </template>

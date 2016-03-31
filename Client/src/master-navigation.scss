@@ -1,4 +1,7 @@
+@import 'variables';
+
 $primary-color: #00558b;
+$flex-grow-size: 1.5;
 
 #master-navigation{
   list-style-type: none;
@@ -17,26 +20,26 @@ $primary-color: #00558b;
     display: flex;
     align-items: stretch;
     border-right: 1px solid #fff;
-    height: 15vmin;
-    animation: navigation-item-shrink-in-width 0.5s;
+    height: $master-navigation-height;
+    animation: navigation-item-shrink-in-width $animation-duration;
 
     &:last-child{
       border-right: none;
     }
 
     &.js-active{
-      animation: navigation-item-grow-in-width 0.5s;
-      flex-grow: 1.5;
+      animation: navigation-item-grow-in-width $animation-duration;
+      flex-grow: $flex-grow-size;
 
       a{
         background-color: darken($primary-color, 10%);
-        padding-top: .2rem;
+        padding-top: 0.2rem;
 
         i{
-          font-size: 8vmin;
+          font-size: 10vmin;
         }
         span{
-          font-size: 6vmin;
+          font-size: 3vmin;
         }
       }
     }
@@ -53,15 +56,15 @@ $primary-color: #00558b;
       text-decoration: none;
       cursor: pointer;
       background-color: $primary-color;
-      transition: padding .5s;
+      transition: padding $animation-duration;
 
       i{
-        transition: font-size 0.5s;
+        transition: font-size $animation-duration;
         font-size: 6vmin;
       }
 
       span{
-        transition: font-size 0.5s;
+        transition: font-size $animation-duration;
         font-size: 4vmin;
       }
     }
@@ -73,13 +76,13 @@ $primary-color: #00558b;
     flex-grow: 1;
   }
   100%{
-    flex-grow: 1.5;
+    flex-grow: $flex-grow-size;
   }
 }
 
 @keyframes navigation-item-shrink-in-width{
   0%{
-    flex-grow: 1.5;
+    flex-grow: $flex-grow-size;
   }
   100%{
     flex-grow: 1;
