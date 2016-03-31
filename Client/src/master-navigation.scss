@@ -4,7 +4,6 @@ $primary-color: #00558b;
   list-style-type: none;
   position: fixed;
   bottom: 0;
-  background-color: $primary-color;
   overflow-x: hidden;
   display: flex;
   flex-flow: row nowrap;
@@ -19,9 +18,27 @@ $primary-color: #00558b;
     align-items: stretch;
     border-right: 1px solid #fff;
     height: 15vmin;
+    animation: navigation-item-shrink-in-width 0.5s;
 
     &:last-child{
       border-right: none;
+    }
+
+    &.js-active{
+      animation: navigation-item-grow-in-width 0.5s;
+      flex-grow: 1.5;
+
+      a{
+        background-color: darken($primary-color, 10%);
+        padding-top: .2rem;
+
+        i{
+          font-size: 8vmin;
+        }
+        span{
+          font-size: 6vmin;
+        }
+      }
     }
 
     a{
@@ -35,20 +52,36 @@ $primary-color: #00558b;
       line-height: 1;
       text-decoration: none;
       cursor: pointer;
-      background-color: transparent;
-
-      &:hover{
-        background-color: lighten($primary-color, 10%);
-      }
-
-      &.active{
-        background-color: darken($primary-color, 10%);
-        cursor: default;
-      }
+      background-color: $primary-color;
+      transition: padding .5s;
 
       i{
-        font-size: 8vmin;
+        transition: font-size 0.5s;
+        font-size: 6vmin;
+      }
+
+      span{
+        transition: font-size 0.5s;
+        font-size: 4vmin;
       }
     }
+  }
+}
+
+@keyframes navigation-item-grow-in-width{
+  0%{
+    flex-grow: 1;
+  }
+  100%{
+    flex-grow: 1.5;
+  }
+}
+
+@keyframes navigation-item-shrink-in-width{
+  0%{
+    flex-grow: 1.5;
+  }
+  100%{
+    flex-grow: 1;
   }
 }

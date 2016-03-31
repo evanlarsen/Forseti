@@ -7,9 +7,9 @@ export class App {
     config.title = 'Forseti';
     config.map([
       { route: ['', 'home'], name: 'home', moduleId: 'home', nav: true, title: 'home' },
-      { route: 'devices', name: 'devices', moduleId: 'devices', nav: true, title: 'List of devices' },
-      { route: 'checkin',  name: 'checkin', moduleId: 'checkin', nav: true, title: 'Checkin' },
-      { route: 'checkin',  name: 'checkout', moduleId: 'checkout', nav: true, title: 'Checkout' }
+      { route: 'devices', name: 'devices', moduleId: 'devices', nav: true, title: 'devices' },
+      { route: 'checkin',  name: 'checkin', moduleId: 'checkin', nav: true, title: 'check in' },
+      { route: 'checkout',  name: 'checkout', moduleId: 'checkout', nav: true, title: 'check out' }
     ]);
 
     this.router = router;
