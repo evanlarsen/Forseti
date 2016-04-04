@@ -2,9 +2,11 @@
   <require from="bootstrap/css/bootstrap.css"></require>
   <require from="app.css"></require>
   <require from="master-navigation"></require>
+  <require from="off-canvas-layout"></require>
 
   <div class="root">
-    <router-view></router-view>
+    <!--<router-view></router-view>-->
+    <off-canvas-layout></off-canvas-layout>
     <master-navigation router.bind="router"></nav-bar>
   </div>
 </template>
