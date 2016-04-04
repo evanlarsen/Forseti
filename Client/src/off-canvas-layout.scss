@@ -1,0 +1,18 @@
+off-canvas-layout, .off-canvas-content{
+  position: absolute;
+  overflow-x: hidden;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 15vmin;
+}
+
+.devices{
+  background-color: yellow;
+}
+.checkin {
+  background-color: green;
+}
+.checkout{
+  background-color: red;
+}
