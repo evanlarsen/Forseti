@@ -64,9 +64,8 @@ export class OffCanvasLayout{
     this.world.draw();
 
     if (this.inputState.isUserDoneSwipping){
-      if (this.inputState.deltaX > World.slideThreshold || this.inputState.deltaX < -World.slideThreshold){
-        window.requestAnimationFrame(this.slideToNewViewAnimationLoop);
-      }
+      console.log('moving to auto slide');
+      window.requestAnimationFrame(this.slideToNewViewAnimationLoop);
       return;
     }
     window.requestAnimationFrame(this.panAnimationLoop);
@@ -79,7 +78,7 @@ export class OffCanvasLayout{
       this.startTimestamp = timestamp;
     }
     let timeDelta = timestamp - this.startTimestamp;
-    let timeRange = 100 * timeDelta / animationDuration;
+    let timeRange = timeDelta / animationDuration;
     let direction: number;
     if ((this.inputState.isSlidingRight && this.world.canSlideRight)
       || (this.inputState.isSlidingLeft && !this.world.canSlideLeft)){
@@ -90,8 +89,9 @@ export class OffCanvasLayout{
     } else {
       throw 'Not sure what happened here but couldnt determine which direction to slide';
     }
-
-    let deltaX = ((100 * direction) - this.inputState.deltaX) * timeRange;
+    let distanceRange = (100 * direction) - this.inputState.deltaX;
+    let deltaX = this.inputState.deltaX + (distanceRange * timeRange);
+    console.log(`deltax ${deltaX}, direction ${direction}, inputState ${this.inputState.deltaX}, timeRange ${timeRange}`);
     this.world.slideWorld(deltaX);
     this.world.draw();
 
@@ -190,13 +190,13 @@ class World{
 
   private foreachFrame(action: (frame: Frame, i: number) => void){
     for(let i = 0, max = this.frames.length; i < max; i++){
-      action.call(this.frames[i], i);
+      action.call(this, this.frames[i], i);
     }
   }
 }
 
 class Frame{
-  public xCoordinate: number
+  public xCoordinate: number;
 
   constructor(
     public htmlElement: HTMLElement,
@@ -216,6 +216,7 @@ class Frame{
   }
 
   draw(){
+    console.log(`drawing frame ${this.index} on coordinate ${this.xCoordinate}`);
     this.htmlElement.style.transform = `translateX(${this.xCoordinate}%)`;
   }
 }
