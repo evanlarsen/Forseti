@@ -23,9 +23,6 @@ export class OffCanvasLayout{
     var source = this.watchPan();
 
     source
-      .map(e => {
-        return { deltaX: e.deltaX, isFirst: e.isFirst, isFinal: e.isFinal };
-      })
       .subscribe(
         this.onPan.bind(this),
         (err) => { console.log('err:', err);},
