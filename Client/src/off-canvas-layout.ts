@@ -80,26 +80,44 @@ export class OffCanvasLayout{
     let timeDelta = timestamp - this.startTimestamp;
     let timeRange = timeDelta / animationDuration;
     let direction: number;
-    if ((this.inputState.isSlidingRight && this.world.canSlideRight)
-      || (this.inputState.isSlidingLeft && !this.world.canSlideLeft)){
+    if (this.inputState.isSlidingRight && this.world.canSlideRight){
       direction = 1;
-    } else if ((this.inputState.isSlidingRight && !this.world.canSlideRight)
-      || (this.inputState.isSlidingLeft && this.world.canSlideLeft)){
+    } else if (this.inputState.isSlidingLeft && this.world.canSlideLeft){
       direction = -1;
+    } else if ((this.inputState.isSlidingRight && !this.world.canSlideRight)
+      || (this.inputState.isSlidingLeft && !this.world.canSlideLeft))
+    {
+      direction = 0;
     } else {
       throw 'Not sure what happened here but couldnt determine which direction to slide';
     }
     let distanceRange = (100 * direction) - this.inputState.deltaX;
     let deltaX = this.inputState.deltaX + (distanceRange * timeRange);
-    console.log(`deltax ${deltaX}, direction ${direction}, inputState ${this.inputState.deltaX}, timeRange ${timeRange}`);
+
+    if (direction === -1) {
+        deltaX = Math.max(deltaX, -100)
+    }else if (direction === 0){
+      if (this.inputState.isSlidingLeft){
+        deltaX = Math.min(deltaX, 0)
+      }else {
+        deltaX = Math.max(deltaX, 0);
+      }
+    }else if (direction === 1){
+      deltaX = Math.min(deltaX, 100);
+    }
+
     this.world.slideWorld(deltaX);
     this.world.draw();
 
-    if (deltaX >= 100 || deltaX <= -100){
+    if ((direction === 0 && this.inputState.isSlidingLeft && deltaX >= 0)
+      || (direction === 0 && this.inputState.isSlidingRight && deltaX <= 0)
+      || ((direction === -1 || direction === 1) && (deltaX >= 100 || deltaX <= -100))){
+      console.log('delta greater than or less than 100');
       this.startTimestamp = undefined;
       this.world.setNewActiveView(direction);
       return;
     }
+    console.log('.');
     window.requestAnimationFrame(this.slideToNewViewAnimationLoop);
   }
 
@@ -168,7 +186,7 @@ class World{
 
   public setNewActiveView(direction: number){
     let activeIndex = this.getIndexOfActiveFrame();
-    let newIndex = activeIndex + direction;
+    let newIndex = activeIndex - direction;
     if (newIndex < 0 || newIndex >= this.frames.length){
       throw "new active index of frames is out of bounds";
     }
@@ -216,7 +234,6 @@ class Frame{
   }
 
   draw(){
-    console.log(`drawing frame ${this.index} on coordinate ${this.xCoordinate}`);
     this.htmlElement.style.transform = `translateX(${this.xCoordinate}%)`;
   }
 }
