@@ -3,7 +3,7 @@ import * as Hammer from 'hammerjs';
 import * as rx from 'rx';
 
 let activeFrameTag = 'js-in-view';
-let animationDuration = 500;
+let animationDuration = 250;
 
 @autoinject
 export class OffCanvasLayout{
@@ -79,42 +79,44 @@ export class OffCanvasLayout{
     }
     let timeDelta = timestamp - this.startTimestamp;
     let timeRange = timeDelta / animationDuration;
-    let direction: number;
+    let targetDeltaX: number;
     if (this.inputState.isSlidingRight && this.world.canSlideRight){
-      direction = 1;
+      targetDeltaX = 100;
     } else if (this.inputState.isSlidingLeft && this.world.canSlideLeft){
-      direction = -1;
+      targetDeltaX = -100;
     } else if ((this.inputState.isSlidingRight && !this.world.canSlideRight)
       || (this.inputState.isSlidingLeft && !this.world.canSlideLeft))
     {
-      direction = 0;
+      targetDeltaX = 0;
     } else {
       throw 'Not sure what happened here but couldnt determine which direction to slide';
     }
-    let distanceRange = (100 * direction) - this.inputState.deltaX;
+    let distanceRange = targetDeltaX - this.inputState.deltaX;
     let deltaX = this.inputState.deltaX + (distanceRange * timeRange);
 
-    if (direction === -1) {
-        deltaX = Math.max(deltaX, -100)
-    }else if (direction === 0){
+    if (targetDeltaX === -100) {
+        deltaX = Math.max(deltaX, targetDeltaX)
+    }else if (targetDeltaX === 0){
       if (this.inputState.isSlidingLeft){
-        deltaX = Math.min(deltaX, 0)
+        deltaX = Math.min(deltaX, targetDeltaX)
       }else {
-        deltaX = Math.max(deltaX, 0);
+        deltaX = Math.max(deltaX, targetDeltaX);
       }
-    }else if (direction === 1){
-      deltaX = Math.min(deltaX, 100);
+    }else if (targetDeltaX === 100){
+      deltaX = Math.min(deltaX, targetDeltaX);
     }
 
     this.world.slideWorld(deltaX);
     this.world.draw();
 
-    if ((direction === 0 && this.inputState.isSlidingLeft && deltaX >= 0)
-      || (direction === 0 && this.inputState.isSlidingRight && deltaX <= 0)
-      || ((direction === -1 || direction === 1) && (deltaX >= 100 || deltaX <= -100))){
+    if ((targetDeltaX === 0 && this.inputState.isSlidingLeft && deltaX >= 0)
+      || (targetDeltaX === 0 && this.inputState.isSlidingRight && deltaX <= 0)
+      || ((targetDeltaX === -100 || targetDeltaX === 100) && (deltaX >= 100 || deltaX <= -100))){
       console.log('delta greater than or less than 100');
       this.startTimestamp = undefined;
-      this.world.setNewActiveView(direction);
+      if (targetDeltaX !== 0){
+          this.world.setNewActiveView(this.inputState.isSlidingLeft);
+      }
       return;
     }
     console.log('.');
@@ -184,9 +186,16 @@ class World{
     return !this.frames[this.frames.length - 1].isActive;
   }
 
-  public setNewActiveView(direction: number){
+  public setNewActiveView(isSlidingLeft: boolean){
     let activeIndex = this.getIndexOfActiveFrame();
-    let newIndex = activeIndex - direction;
+    let newIndex: number;
+    if (isSlidingLeft && this.canSlideLeft){
+      newIndex = activeIndex + 1;
+    } else if (!isSlidingLeft && this.canSlideRight){
+      newIndex = activeIndex - 1;
+    } else {
+      // index is staying the same
+    }
     if (newIndex < 0 || newIndex >= this.frames.length){
       throw "new active index of frames is out of bounds";
     }
