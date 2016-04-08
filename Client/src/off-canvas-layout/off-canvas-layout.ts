@@ -2,9 +2,9 @@ import {autoinject} from 'aurelia-framework';
 import * as Hammer from 'hammerjs';
 import * as rx from 'rx';
 import {InputState} from './input-state';
-import {Settings} from './settings';
 import {Stage} from './stage';
 import {Frame} from './frame';
+import {Settings} from './settings';
 
 @autoinject
 export class OffCanvasLayout{
@@ -20,9 +20,7 @@ export class OffCanvasLayout{
   attached(){
     this.initializeContent();
 
-    var source = this.watchPan();
-
-    source
+    this.watchPan()
       .subscribe(
         this.onPan.bind(this),
         (err) => { console.log('err:', err);},
@@ -39,7 +37,7 @@ export class OffCanvasLayout{
     }
 
     this.stage.resetFramesPositions();
-    this.stage.draw();
+    window.requestAnimationFrame(this.gameLoop);
   }
 
   private onPan(event : HammerInput){
@@ -47,7 +45,6 @@ export class OffCanvasLayout{
     this.inputState.isUserDoneSwipping = false;
 
     if (!this.inputState.isUserSwipping){
-      window.requestAnimationFrame(this.panAnimationLoop);
       this.inputState.isUserSwipping = true;
     }
 
@@ -57,66 +54,20 @@ export class OffCanvasLayout{
     }
   }
 
-  private panAnimationLoop = this._panAnimationLoop.bind(this);
-  private _panAnimationLoop(timestamp?: number){
-    this.stage.slideFrames(this.inputState.deltaX);
+  lastTimestamp: number;
+
+  gameLoop = this._gameLoop.bind(this);
+  private _gameLoop(timestamp: number){
+    if (!this.lastTimestamp){
+      this.lastTimestamp = timestamp;
+    }
+    let timeDelta = timestamp - this.lastTimestamp;
+
+    this.stage.update(timeDelta, this.inputState);
     this.stage.draw();
 
-    if (this.inputState.isUserDoneSwipping){
-      window.requestAnimationFrame(this.slideToNewViewAnimationLoop);
-      return;
-    }
-    window.requestAnimationFrame(this.panAnimationLoop);
-  }
-
-  startTimestamp: number;
-  private slideToNewViewAnimationLoop = this._slideToNewViewAnimationLoop.bind(this);
-  private _slideToNewViewAnimationLoop(timestamp?:number){
-    if (!this.startTimestamp){
-      this.startTimestamp = timestamp;
-    }
-    let timeDelta = timestamp - this.startTimestamp;
-    let timeRange = timeDelta / Settings.animationDuration;
-    let targetDeltaX: number;
-    if (this.inputState.isSlidingRight && this.stage.canSlideRight){
-      targetDeltaX = 100;
-    } else if (this.inputState.isSlidingLeft && this.stage.canSlideLeft){
-      targetDeltaX = -100;
-    } else if ((this.inputState.isSlidingRight && !this.stage.canSlideRight)
-      || (this.inputState.isSlidingLeft && !this.stage.canSlideLeft))
-    {
-      targetDeltaX = 0;
-    } else {
-      throw 'Not sure what happened here but couldnt determine which direction to slide';
-    }
-    let distanceRange = targetDeltaX - this.inputState.deltaX;
-    let deltaX = this.inputState.deltaX + (distanceRange * timeRange);
-
-    if (targetDeltaX === -100) {
-        deltaX = Math.max(deltaX, targetDeltaX)
-    }else if (targetDeltaX === 100){
-      deltaX = Math.min(deltaX, targetDeltaX);
-    }else if (targetDeltaX === 0){
-      if (this.inputState.isSlidingLeft){
-        deltaX = Math.min(deltaX, targetDeltaX)
-      }else {
-        deltaX = Math.max(deltaX, targetDeltaX);
-      }
-    }
-
-    this.stage.slideFrames(deltaX);
-    this.stage.draw();
-
-    if ((targetDeltaX === 0 && this.inputState.isSlidingLeft && deltaX >= 0)
-      || (targetDeltaX === 0 && this.inputState.isSlidingRight && deltaX <= 0)
-      || ((targetDeltaX === -100 || targetDeltaX === 100) && (deltaX >= 100 || deltaX <= -100))){
-      this.startTimestamp = undefined;
-      if (targetDeltaX !== 0){
-          this.stage.setNewActiveView(this.inputState.isSlidingLeft);
-      }
-      return;
-    }
-    window.requestAnimationFrame(this.slideToNewViewAnimationLoop);
+    this.lastTimestamp = timestamp;
+    window.requestAnimationFrame(this.gameLoop);
   }
 
   private watchPan() : rx.Observable<HammerInput>{
