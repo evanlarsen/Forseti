@@ -1,6 +1,13 @@
 import {Settings} from './settings';
 
-export class Frame{
+export interface IFrame{
+  isActive: boolean;
+  xCoordinate: number;
+  index: number;
+  draw: () => void;
+}
+
+export class Frame implements IFrame{
   public xCoordinate: number;
 
   constructor(

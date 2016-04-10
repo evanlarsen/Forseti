@@ -30,7 +30,7 @@ module.exports = function(config) {
     },
     files: [
       'test/unit/setup.ts',
-      'test/unit/*.ts'
+      'test/unit/**/*.ts'
     ],
     exclude: [],
     preprocessors: { },

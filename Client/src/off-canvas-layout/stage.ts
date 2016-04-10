@@ -1,16 +1,18 @@
-import {Frame} from './frame';
+import {IFrame} from './frame';
 import {Settings} from './settings';
 import {InputState} from './input-state';
 
 export class Stage{
   public static slideThreshold = 50;
-  public frames: Frame[];
+  public frames: IFrame[];
+
   constructor(){
     this.frames = [];
   }
 
   previousDeltaX: number;
   waitingState = false;
+
 
   public update(timeDelta: number, inputState: InputState){
     if (inputState.isUserSwipping){
@@ -24,7 +26,7 @@ export class Stage{
     }
     else if (inputState.isUserDoneSwipping && !this.waitingState){
       this.previousDeltaX = undefined;
-      let activeFrame = this.getFrameClosestToOrigin();
+      let activeFrame = this.getActiveFrame();
       let timeRange = timeDelta / Settings.animationDuration;
       let targetDeltaX = this.getTargetDeltaX(inputState);
       let distanceRange = targetDeltaX - inputState.deltaX;
@@ -70,10 +72,14 @@ export class Stage{
     return targetDeltaX;
   }
 
+  public getFrameOnCanvas(): IFrame{
+    return this.frames[0];
+  }
+
   public resetFramesPositions(){
-    let activeIndex = this.getIndexOfActiveFrame();
+    let activeIndex = this.getActiveFrame().index;
     this.foreachFrame((frame, i) => {
-      frame.xCoordinate = (activeIndex - i) * 100;
+      frame.xCoordinate = (i - activeIndex) * 100;
     });
   }
 
@@ -83,7 +89,7 @@ export class Stage{
     });
   }
 
-  public slideFrames(deltaX: number){
+  private slideFrames(deltaX: number){
     this.foreachFrame((frame, i) => {
       frame.xCoordinate = frame.xCoordinate + deltaX;
     });
@@ -97,25 +103,29 @@ export class Stage{
     return !this.frames[this.frames.length - 1].isActive;
   }
 
-  public setNewActiveFrame(activeFrame: Frame){
+  private setNewActiveFrame(activeFrame: IFrame){
     this.foreachFrame((frame, i) => {
       frame.isActive = !!(frame === activeFrame);
     });
   }
 
-  private getIndexOfActiveFrame(){
-    for(let i = 0, max = this.frames.length; i < max; i++){
-      if (this.frames[i].htmlElement.classList.contains(Settings.activeFrameTag)){
-        return i;
+  private getActiveFrame(): IFrame{
+    let activeFrame: IFrame;
+    this.foreachFrame((frame, i) => {
+      if (frame.isActive){
+        activeFrame = frame;
       }
+    });
+    if (!activeFrame){
+      throw `There are no frames marked with the css class '${Settings.activeFrameTag}'`
+       + ' which marks the div on the canvas. All other divs will be'
+       + ' rendered off canvas.';
     }
-    throw `There are no frames marked with the css class '${Settings.activeFrameTag}'`
-     + ' which marks the div on the canvas. All other divs will be'
-     + ' rendered off canvas.';
+    return activeFrame;
   }
 
-  private getFrameClosestToOrigin(): Frame{
-    let foundFrame: Frame;
+  private getFrameClosestToOrigin(): IFrame{
+    let foundFrame: IFrame;
     this.foreachFrame((frame, i) => {
       if (!foundFrame){
         foundFrame = frame;
@@ -127,7 +137,7 @@ export class Stage{
     return foundFrame;
   }
 
-  private foreachFrame(action: (frame: Frame, i: number) => void){
+  private foreachFrame(action: (frame: IFrame, i: number) => void){
     for(let i = 0, max = this.frames.length; i < max; i++){
       action.call(this, this.frames[i], i);
     }
