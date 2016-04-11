@@ -10,16 +10,12 @@ export class Stage{
     this.frames = [];
   }
 
-  previousDeltaX: number;
+  previousDeltaX = 0;
   waitingState = false;
-
 
   public update(timeDelta: number, inputState: InputState){
     if (inputState.isUserSwipping){
-      if (!this.previousDeltaX){
-        this.previousDeltaX = inputState.deltaX;
-        this.waitingState = false;
-      }
+      this.waitingState = false;
       let deltaXFromLastUpdate = inputState.deltaX - this.previousDeltaX;
       this.previousDeltaX = inputState.deltaX;
       this.slideFrames(deltaXFromLastUpdate);
@@ -27,6 +23,7 @@ export class Stage{
     else if (inputState.isUserDoneSwipping && !this.waitingState){
       this.previousDeltaX = undefined;
       let activeFrame = this.getActiveFrame();
+      let closestFrameToCanvas = this.getFrameClosestToCanvas(inputState);
       let timeRange = timeDelta / Settings.animationDuration;
       let targetDeltaX = this.getTargetDeltaX(inputState);
       let distanceRange = targetDeltaX - inputState.deltaX;
@@ -72,8 +69,21 @@ export class Stage{
     return targetDeltaX;
   }
 
-  public getFrameOnCanvas(): IFrame{
-    return this.frames[0];
+  public getFrameClosestToCanvas(inputState: InputState): IFrame{
+    let closestFrame: IFrame;
+    this.foreachFrame((frame, i) => {
+      if (!closestFrame){
+        closestFrame = frame;
+        return;
+      }
+      if (Math.abs(frame.xCoordinate) < Math.abs(closestFrame.xCoordinate)){
+        closestFrame = frame;
+      }
+    });
+    if (!closestFrame){
+      throw 'cannot find the closest frame to the canvas because there are no frames on the stage';
+    }
+    return closestFrame;
   }
 
   public resetFramesPositions(){
@@ -122,19 +132,6 @@ export class Stage{
        + ' rendered off canvas.';
     }
     return activeFrame;
-  }
-
-  private getFrameClosestToOrigin(): IFrame{
-    let foundFrame: IFrame;
-    this.foreachFrame((frame, i) => {
-      if (!foundFrame){
-        foundFrame = frame;
-      }
-      if (Math.abs(frame.xCoordinate) < foundFrame.xCoordinate){
-        foundFrame = frame;
-      }
-    });
-    return foundFrame;
   }
 
   private foreachFrame(action: (frame: IFrame, i: number) => void){
