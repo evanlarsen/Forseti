@@ -22,13 +22,12 @@ export class Stage{
     }
     else if (inputState.isUserDoneSwipping && !this.waitingState){
       this.previousDeltaX = undefined;
-      let activeFrame = this.getActiveFrame();
       let closestFrameToCanvas = this.getFrameClosestToCanvas(inputState);
       let timeRange = timeDelta / Settings.animationDuration;
       let targetDeltaX = this.getTargetDeltaX(inputState);
       let distanceRange = targetDeltaX - inputState.deltaX;
       let deltaX = distanceRange * timeRange;
-      let distanceToTarget = targetDeltaX - activeFrame.xCoordinate;
+      let distanceToTarget = targetDeltaX - closestFrameToCanvas.xCoordinate;
       if (targetDeltaX === -100) {
           deltaX = Math.max(deltaX, distanceToTarget)
       }else if (targetDeltaX === 100){
@@ -40,13 +39,13 @@ export class Stage{
           deltaX = Math.max(deltaX, distanceToTarget);
         }
       }
-      console.log(`frameCoord ${activeFrame.xCoordinate} frame ${activeFrame.index} deltaX ${deltaX} distanceToTarget ${distanceToTarget}`)
+      console.log(`frameCoord ${closestFrameToCanvas.xCoordinate} frame ${closestFrameToCanvas.index} deltaX ${deltaX} distanceToTarget ${distanceToTarget}`)
       this.slideFrames(deltaX);
 
       if (distanceToTarget === deltaX){
         console.log('target reached');
         if (targetDeltaX !== 0){
-          this.setNewActiveFrame(activeFrame);
+          this.setNewActiveFrame(closestFrameToCanvas);
         }
         this.waitingState = true;
       }
