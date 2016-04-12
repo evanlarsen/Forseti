@@ -1,12 +1,13 @@
 import {IFrame} from './frame';
 import {Settings} from './settings';
 import {InputState} from './input-state';
+import {EventAggregator} from 'aurelia-event-aggregator';
 
 export class Stage{
   public static slideThreshold = 50;
   public frames: IFrame[];
 
-  constructor(){
+  constructor(private eventAggregator: EventAggregator){
     this.frames = [];
   }
 
@@ -39,7 +40,7 @@ export class Stage{
           deltaX = Math.max(deltaX, distanceToTarget);
         }
       }
-      console.log(`frameCoord ${closestFrameToCanvas.xCoordinate} frame ${closestFrameToCanvas.index} deltaX ${deltaX} distanceToTarget ${distanceToTarget}`)
+      this.eventAggregator.publish('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: deltaX, distanceToTarget: distanceToTarget});
       this.slideFrames(deltaX);
 
       if (distanceToTarget === deltaX){

@@ -34,7 +34,7 @@ gulp.task('build-html', function() {
 });
 
 // copies changed css files to the output directory
-gulp.task('build-css', function() {
+gulp.task('build-scss', function() {
   return gulp.src(paths.scss)
     .pipe(plumber())
     .pipe(changed(paths.output, {extension: '.css'}))
@@ -51,7 +51,7 @@ gulp.task('build-css', function() {
 gulp.task('build', function(callback) {
   return runSequence(
     'clean',
-    ['build-system', 'build-html', 'build-css'],
+    ['build-system', 'build-html', 'build-scss'],
     callback
   );
 });

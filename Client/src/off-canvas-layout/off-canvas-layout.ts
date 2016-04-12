@@ -1,10 +1,10 @@
 import {autoinject} from 'aurelia-framework';
 import * as Hammer from 'hammerjs';
-import * as rx from 'rx';
 import {InputState} from './input-state';
 import {Stage} from './stage';
 import {Frame} from './frame';
 import {Settings} from './settings';
+import {EventAggregator} from 'aurelia-event-aggregator';
 
 @autoinject
 export class OffCanvasLayout{
@@ -12,20 +12,18 @@ export class OffCanvasLayout{
   private inputState: InputState;
   public activeFrameTag = Settings.activeFrameTag;
 
-  constructor(private element: Element){
-    this.stage = new Stage();
+  constructor(private element: Element, private eventAggregator: EventAggregator){
+    this.stage = new Stage(eventAggregator);
     this.inputState = new InputState();
   }
 
   attached(){
     this.initializeContent();
 
-    this.watchPan()
-      .subscribe(
-        this.onPan.bind(this),
-        (err) => { console.log('err:', err);},
-        () => { console.log('completed');}
-      );
+    let recognizer = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 10});
+    let hammer = new Hammer(<HTMLElement>this.element, {});
+    hammer.add(recognizer);
+    hammer.on('pan', this.onPan.bind(this));
   }
 
   private initializeContent(){
@@ -68,18 +66,5 @@ export class OffCanvasLayout{
 
     this.lastTimestamp = timestamp;
     window.requestAnimationFrame(this.gameLoop);
-  }
-
-  private watchPan() : rx.Observable<HammerInput>{
-    let recognizer = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 10});
-    let hammer = new Hammer(<HTMLElement>this.element, {});
-    hammer.add(recognizer);
-    return rx.Observable.create<HammerInput>(observer => {
-      hammer.on('pan', ev => {
-        observer.onNext(ev);
-      });
-
-      return () => { hammer.off('off'); };
-    });
   }
 }
