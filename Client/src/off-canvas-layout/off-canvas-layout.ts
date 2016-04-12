@@ -33,8 +33,8 @@ export class OffCanvasLayout{
       let frame = new Frame(<HTMLElement>frames[i], i)
       this.stage.frames.push(frame);
     }
-
     this.stage.resetFramesPositions();
+    
     window.requestAnimationFrame(this.gameLoop);
   }
 

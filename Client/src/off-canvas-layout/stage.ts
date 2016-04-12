@@ -13,16 +13,18 @@ export class Stage{
 
   previousDeltaX = 0;
   waitingState = false;
-
+  updateCalled = 0;
   public update(timeDelta: number, inputState: InputState){
+    this.updateCalled++;
     if (inputState.isUserSwipping){
       this.waitingState = false;
       let deltaXFromLastUpdate = inputState.deltaX - this.previousDeltaX;
       this.previousDeltaX = inputState.deltaX;
       this.slideFrames(deltaXFromLastUpdate);
+      this.eventAggregator.publish('stage-update', {inputState: inputState, updateCalled: this.updateCalled});
     }
     else if (inputState.isUserDoneSwipping && !this.waitingState){
-      this.previousDeltaX = undefined;
+      this.previousDeltaX = 0;
       let closestFrameToCanvas = this.getFrameClosestToCanvas();
       let timeRange = timeDelta / Settings.animationDuration;
       let targetDeltaX = this.getTargetDeltaX(inputState);
@@ -40,7 +42,7 @@ export class Stage{
           deltaX = Math.max(deltaX, distanceToTarget);
         }
       }
-      this.eventAggregator.publish('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: deltaX, distanceToTarget: distanceToTarget});
+      this.eventAggregator.publish('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: deltaX, distanceToTarget: distanceToTarget, updateCalled: this.updateCalled});
       this.slideFrames(deltaX);
 
       if (distanceToTarget === deltaX){

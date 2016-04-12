@@ -9,6 +9,7 @@ export class DebugInfo{
   closestFrameIsActive: boolean;
   closestFramexCoordinate: number;
   closestFrameIndex: number;
+  updateCalled: number;
 
   constructor(private eventAggregator: EventAggregator){
     //{inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: deltaX, distanceToTarget: distanceToTarget});
@@ -23,6 +24,7 @@ export class DebugInfo{
         this.closestFramexCoordinate = payload.closestFrameToCanvas.xCoordinate;
         this.closestFrameIndex = payload.closestFrameToCanvas.index;
       }
+      this.updateCalled = payload.updateCalled;
     });
   }
 }
