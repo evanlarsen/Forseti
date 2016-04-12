@@ -27,25 +27,25 @@ describe('when swipping stage getClosestFrameToCanvas() should', () => {
 
   it('get closest frame to canvas when swipping right', () => {
     let inputState = simulateSwipe(sut, 60);
-    let frame = sut.getFrameClosestToCanvas(inputState);
+    let frame = sut.getFrameClosestToCanvas();
     expect(frame).toEqual(sut.frames[0]);
   });
 
   it('get closest frame to canvas when swipping far right', () => {
     let inputState = simulateSwipe(sut, 260);
-    let frame = sut.getFrameClosestToCanvas(inputState);
+    let frame = sut.getFrameClosestToCanvas();
     expect(frame).toEqual(sut.frames[0]);
   });
 
   it('get closest frame to canvas when swipping left', () => {
     let inputState = simulateSwipe(sut, -60);
-    let frame = sut.getFrameClosestToCanvas(inputState);
+    let frame = sut.getFrameClosestToCanvas();
     expect(frame).toEqual(sut.frames[2]);
   });
 
   it('get closest frame to canvas when swipping far left', () => {
     let inputState = simulateSwipe(sut, -360);
-    let frame = sut.getFrameClosestToCanvas(inputState);
+    let frame = sut.getFrameClosestToCanvas();
     expect(frame).toEqual(sut.frames[3]);
   });
 });
@@ -104,7 +104,7 @@ describe('when swiping stage update() should', () => {
   });
 
   it('automatically slide frame back when active frame is the last frame and swipping left', () => {
-    let sut = createStageStub(0);
+    let sut = createStageStub(3);
     let inputState = simulateSwipe(sut, -100);
     simulateTimeDurationPassing(sut, inputState.deltaX);
     expect(sut.frames[3].xCoordinate).toEqual(0);

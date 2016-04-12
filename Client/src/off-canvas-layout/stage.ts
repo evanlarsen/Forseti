@@ -22,7 +22,7 @@ export class Stage{
     }
     else if (inputState.isUserDoneSwipping && !this.waitingState){
       this.previousDeltaX = undefined;
-      let closestFrameToCanvas = this.getFrameClosestToCanvas(inputState);
+      let closestFrameToCanvas = this.getFrameClosestToCanvas();
       let timeRange = timeDelta / Settings.animationDuration;
       let targetDeltaX = this.getTargetDeltaX(inputState);
       let distanceRange = targetDeltaX - inputState.deltaX;
@@ -54,7 +54,9 @@ export class Stage{
 
   private getTargetDeltaX(inputState: InputState): number{
     let targetDeltaX: number;
-    if (inputState.isSlidingRight && this.canSlideRight){
+    if (Math.abs(inputState.deltaX) < Settings.slideToAdjacentFrameBreakpoint){
+      targetDeltaX = 0;
+    }else if (inputState.isSlidingRight && this.canSlideRight){
       targetDeltaX = 100;
     } else if (inputState.isSlidingLeft && this.canSlideLeft){
       targetDeltaX = -100;
@@ -68,7 +70,7 @@ export class Stage{
     return targetDeltaX;
   }
 
-  public getFrameClosestToCanvas(inputState: InputState): IFrame{
+  public getFrameClosestToCanvas(): IFrame{
     let closestFrame: IFrame;
     this.foreachFrame((frame, i) => {
       if (!closestFrame){
