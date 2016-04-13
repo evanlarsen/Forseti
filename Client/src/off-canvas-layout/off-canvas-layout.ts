@@ -19,7 +19,7 @@ export class OffCanvasLayout{
 
   attached(){
     this.initializeContent();
-
+    window.requestAnimationFrame(this.gameLoop);
     let recognizer = new Hammer.Pan({ direction: Hammer.DIRECTION_HORIZONTAL, threshold: 10});
     let hammer = new Hammer(<HTMLElement>this.element, {});
     hammer.add(recognizer);
@@ -28,14 +28,11 @@ export class OffCanvasLayout{
 
   private initializeContent(){
     let frames = this.element.querySelectorAll('.off-canvas-content');
-
     for(let i = 0, max = frames.length; i < max; i++){
       let frame = new Frame(<HTMLElement>frames[i], i)
       this.stage.frames.push(frame);
     }
     this.stage.resetFramesPositions();
-    
-    window.requestAnimationFrame(this.gameLoop);
   }
 
   private onPan(event : HammerInput){

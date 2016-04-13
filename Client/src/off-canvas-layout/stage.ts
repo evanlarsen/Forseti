@@ -51,24 +51,6 @@ export class Stage{
     }
   }
 
-  private getTargetDeltaX(inputState: InputState): number{
-    let targetDeltaX: number;
-    if (Math.abs(inputState.deltaX) < Settings.slideToAdjacentFrameBreakpoint){
-      targetDeltaX = 0;
-    }else if (inputState.isSlidingRight && this.canSlideRight){
-      targetDeltaX = 100;
-    } else if (inputState.isSlidingLeft && this.canSlideLeft){
-      targetDeltaX = -100;
-    } else if ((inputState.isSlidingRight && !this.canSlideRight)
-      || (inputState.isSlidingLeft && !this.canSlideLeft))
-    {
-      targetDeltaX = 0;
-    } else {
-      throw 'Not sure what happened here but couldnt determine which direction to slide';
-    }
-    return targetDeltaX;
-  }
-
   public getFrameClosestToCanvas(): IFrame{
     let closestFrame: IFrame;
     this.foreachFrame((frame, i) => {
@@ -103,14 +85,6 @@ export class Stage{
     this.foreachFrame((frame, i) => {
       frame.xCoordinate = frame.xCoordinate + deltaX;
     });
-  }
-
-  get canSlideRight(): boolean{
-    return !this.frames[0].isActive;
-  }
-
-  get canSlideLeft(): boolean{
-    return !this.frames[this.frames.length - 1].isActive;
   }
 
   private setNewActiveFrame(activeFrame: IFrame){
