@@ -110,6 +110,8 @@ describe('when swiping stage update() should', () => {
     expect(sut.frames[3].xCoordinate).toEqual(0);
     expect(sut.frames[2].xCoordinate).toEqual(-100);
   });
+
+
 });
 
 class FrameStub implements IFrame {
@@ -148,5 +150,5 @@ function simulateTimeDurationPassing(sut: Stage, deltaX: number){
   let inputState = new InputState();
   inputState.isUserDoneSwipping = true;
   inputState.deltaX = deltaX;
-  sut.update(Settings.animationDuration, inputState);
+  sut.update(Settings.animationDuration + 250, inputState);
 }

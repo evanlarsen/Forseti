@@ -7,7 +7,7 @@ export class Stage{
   public static slideThreshold = 50;
   public frames: IFrame[];
 
-  constructor(private eventAggregator: EventAggregator){
+  constructor(private eventAggregator?: EventAggregator){
     this.frames = [];
   }
 
@@ -21,35 +21,31 @@ export class Stage{
       let deltaXFromLastUpdate = inputState.deltaX - this.previousDeltaX;
       this.previousDeltaX = inputState.deltaX;
       this.slideFrames(deltaXFromLastUpdate);
-      this.eventAggregator.publish('stage-update', {inputState: inputState, updateCalled: this.updateCalled});
+      if (this.eventAggregator){
+        this.eventAggregator.publish('stage-update', {inputState: inputState, updateCalled: this.updateCalled});
+      }
     }
     else if (inputState.isUserDoneSwipping && !this.waitingState){
       this.previousDeltaX = 0;
       let closestFrameToCanvas = this.getFrameClosestToCanvas();
       let timeRange = timeDelta / Settings.animationDuration;
-      let targetDeltaX = this.getTargetDeltaX(inputState);
-      let distanceRange = targetDeltaX - inputState.deltaX;
-      let deltaX = distanceRange * timeRange;
-      let distanceToTarget = targetDeltaX - closestFrameToCanvas.xCoordinate;
-      if (targetDeltaX === -100) {
-          deltaX = Math.max(deltaX, distanceToTarget)
-      }else if (targetDeltaX === 100){
-        deltaX = Math.min(deltaX, distanceToTarget);
-      }else if (targetDeltaX === 0){
-        if (inputState.isSlidingLeft){
-          deltaX = Math.min(deltaX, distanceToTarget)
-        }else {
-          deltaX = Math.max(deltaX, distanceToTarget);
-        }
-      }
-      this.eventAggregator.publish('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: deltaX, distanceToTarget: distanceToTarget, updateCalled: this.updateCalled});
-      this.slideFrames(deltaX);
+      let distanceToTarget = -closestFrameToCanvas.xCoordinate;
+      let distanceOverTime = distanceToTarget * timeRange;
 
-      if (distanceToTarget === deltaX){
-        console.log('target reached');
-        if (targetDeltaX !== 0){
-          this.setNewActiveFrame(closestFrameToCanvas);
-        }
+      if (distanceToTarget > 0){
+        distanceOverTime = Math.min(distanceOverTime, distanceToTarget);
+      } else {
+        distanceOverTime = Math.max(distanceOverTime, distanceToTarget);
+      }
+
+      if (this.eventAggregator){
+        this.eventAggregator.publish('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: distanceOverTime, distanceToTarget: distanceToTarget, updateCalled: this.updateCalled});
+      }
+
+      this.slideFrames(distanceOverTime);
+
+      if (distanceToTarget === distanceOverTime){
+        this.setNewActiveFrame(closestFrameToCanvas);
         this.waitingState = true;
       }
     }
