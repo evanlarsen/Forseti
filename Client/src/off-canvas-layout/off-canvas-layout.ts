@@ -4,7 +4,7 @@ import {InputState} from './input-state';
 import {Stage} from './stage';
 import {Frame} from './frame';
 import {Settings} from './settings';
-import {EventAggregator} from 'aurelia-event-aggregator';
+import {Events} from '../infrastructure/events';
 
 @autoinject
 export class OffCanvasLayout{
@@ -12,8 +12,8 @@ export class OffCanvasLayout{
   private inputState: InputState;
   public activeFrameTag = Settings.activeFrameTag;
 
-  constructor(private element: Element, private eventAggregator: EventAggregator){
-    this.stage = new Stage(eventAggregator);
+  constructor(private element: Element, private events: Events){
+    this.stage = new Stage(events);
     this.inputState = new InputState();
   }
 

@@ -1,13 +1,13 @@
 import {IFrame} from './frame';
 import {Settings} from './settings';
 import {InputState} from './input-state';
-import {EventAggregator} from 'aurelia-event-aggregator';
+import {IEvents} from '../infrastructure/events';
 
 export class Stage{
   public static slideThreshold = 50;
   public frames: IFrame[];
 
-  constructor(private eventAggregator?: EventAggregator){
+  constructor(private events?: IEvents){
     this.frames = [];
   }
 
@@ -21,9 +21,7 @@ export class Stage{
       let deltaXFromLastUpdate = inputState.deltaX - this.previousDeltaX;
       this.previousDeltaX = inputState.deltaX;
       this.slideFrames(deltaXFromLastUpdate);
-      if (this.eventAggregator){
-        this.eventAggregator.publish('stage-update', {inputState: inputState, updateCalled: this.updateCalled});
-      }
+      this.publishEvent('stage-update', {inputState: inputState, updateCalled: this.updateCalled});
     }
     else if (inputState.isUserDoneSwipping && !this.waitingState){
       this.previousDeltaX = 0;
@@ -38,16 +36,19 @@ export class Stage{
         distanceOverTime = Math.max(distanceOverTime, distanceToTarget);
       }
 
-      if (this.eventAggregator){
-        this.eventAggregator.publish('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: distanceOverTime, distanceToTarget: distanceToTarget, updateCalled: this.updateCalled});
-      }
-
+      this.publishEvent('stage-update', {inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: distanceOverTime, distanceToTarget: distanceToTarget, updateCalled: this.updateCalled});
       this.slideFrames(distanceOverTime);
 
       if (distanceToTarget === distanceOverTime){
         this.setNewActiveFrame(closestFrameToCanvas);
         this.waitingState = true;
       }
+    }
+  }
+
+  private publishEvent(event: string, data: any){
+    if (this.events){
+      this.events.publish(event, data);
     }
   }
 

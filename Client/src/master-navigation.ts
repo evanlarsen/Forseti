@@ -1,5 +1,5 @@
 import {bindable} from 'aurelia-framework';
-import {EventAggregator} from 'aurelia-event-aggregator';
+import {IEvents} from './infrastructure/events';
 import {autoinject} from 'aurelia-dependency-injection';
 
 @autoinject
@@ -9,8 +9,8 @@ export class MasterNavigation{
     isDevices: boolean;
     isCheckOut: boolean;
 
-    constructor(private eventAggregator: EventAggregator){
-      this.eventAggregator.subscribe(
+    constructor(private events: IEvents){
+      this.events.subscribe(
         'router:navigation:success',
         this.navigationSuccess.bind(this)
       );
