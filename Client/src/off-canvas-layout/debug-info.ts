@@ -1,4 +1,4 @@
-import {EventAggregator} from 'aurelia-event-aggregator';
+import {Events} from '../infrastructure/events';
 import {autoinject} from 'aurelia-framework';
 
 @autoinject
@@ -11,9 +11,9 @@ export class DebugInfo{
   closestFrameIndex: number;
   updateCalled: number;
 
-  constructor(private eventAggregator: EventAggregator){
+  constructor(private events: Events){
     //{inputState: inputState, closestFrameToCanvas: closestFrameToCanvas, deltaX: deltaX, distanceToTarget: distanceToTarget});
-    this.eventAggregator.subscribe('stage-update', payload => {
+    this.events.subscribe('stage-update', payload => {
       if (payload.inputState){
         this.isUserSwipping = payload.inputState.isUserSwipping;
         this.inputStateDeltaX = payload.inputState.deltaX;
