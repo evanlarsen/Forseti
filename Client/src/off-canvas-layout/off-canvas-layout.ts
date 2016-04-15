@@ -59,7 +59,9 @@ export class OffCanvasLayout{
     let timeDelta = timestamp - this.lastTimestamp;
 
     this.stage.update(timeDelta, this.inputState);
+    this.events.publish('gameloop:update', { timeDelta: timeDelta, inputState: this.inputState });
     this.stage.draw();
+    this.events.publish('gameloop:draw');
 
     this.lastTimestamp = timestamp;
     window.requestAnimationFrame(this.gameLoop);

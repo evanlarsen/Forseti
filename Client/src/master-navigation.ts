@@ -1,5 +1,5 @@
 import {bindable} from 'aurelia-framework';
-import {IEvents} from './infrastructure/events';
+import {Events} from './infrastructure/events';
 import {autoinject} from 'aurelia-dependency-injection';
 
 @autoinject
@@ -9,11 +9,12 @@ export class MasterNavigation{
     isDevices: boolean;
     isCheckOut: boolean;
 
-    constructor(private events: IEvents){
+    constructor(private events: Events){
       this.events.subscribe(
         'router:navigation:success',
         this.navigationSuccess.bind(this)
       );
+      
       this.resetNavFlags();
     }
 
